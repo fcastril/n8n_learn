@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: /dist
+          path: packages/cli
 
   deploy:
     runs-on: ubuntu-latest
@@ -69,6 +69,7 @@ jobs:
           app-name: 'n8n-learn'
           slot-name: 'Production'
           package: .
+
 
 
 
