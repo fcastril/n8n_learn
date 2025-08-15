@@ -22,8 +22,6 @@ jobs:
 
       - name: Set up PNPM
         uses: pnpm/action-setup@v4
-        with:
-          version: 10 # O la versión que necesites
 
       - name: Set up Node.js version
         uses: actions/setup-node@v3
@@ -72,3 +70,4 @@ jobs:
           app-name: 'n8n-learn'
           slot-name: 'Production'
           package: .
+
