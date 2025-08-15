@@ -1,6 +1,11 @@
 # --- Etapa 1: Builder ---
-# Usamos la imagen robusta para la compilación
+# Usamos la imagen robusta y le añadimos las herramientas de compilación específicas
 FROM node:22-bookworm AS builder
+
+# --- INICIO DEL CAMBIO ---
+# Instalar las herramientas de compilación y las librerías de desarrollo de SQLite
+RUN apt-get update && apt-get install -y build-essential libsqlite3-dev --no-install-recommends
+# --- FIN DEL CAMBIO ---
 
 WORKDIR /app
 
@@ -16,11 +21,8 @@ ENV NODE_OPTIONS=--max-old-space-size=8192
 # Instalar dependencias ignorando los scripts de post-instalación
 RUN pnpm install --ignore-scripts
 
-# --- INICIO DEL CAMBIO ---
-# Construir el proyecto, excluyendo el paquete problemático @n8n/n8n-nodes-langchain
-# usando el flag --filter de Turbo.
-RUN pnpm run build --filter="!@n8n/n8n-nodes-langchain"
-# --- FIN DEL CAMBIO ---
+# Construir el proyecto completo. Ya no es necesario filtrar paquetes.
+RUN pnpm run build
 
 
 # --- Etapa 2: Production ---
