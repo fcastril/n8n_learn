@@ -13,14 +13,14 @@ COPY . .
 # Aumentar el límite de memoria para Node.js
 ENV NODE_OPTIONS=--max-old-space-size=8192
 
-# --- INICIO DEL CAMBIO ---
 # Instalar dependencias ignorando los scripts de post-instalación
-# para evitar que scripts problemáticos de paquetes individuales fallen.
 RUN pnpm install --ignore-scripts
-# --- FIN DEL CAMBIO ---
 
-# Construir el proyecto. Este paso compilará todo lo necesario.
-RUN pnpm run build
+# --- INICIO DEL CAMBIO ---
+# Construir el proyecto, excluyendo el paquete problemático @n8n/n8n-nodes-langchain
+# usando el flag --filter de Turbo.
+RUN pnpm run build --filter="!@n8n/n8n-nodes-langchain"
+# --- FIN DEL CAMBIO ---
 
 
 # --- Etapa 2: Production ---
