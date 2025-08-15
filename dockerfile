@@ -2,6 +2,11 @@
 # Aquí instalamos todo (incluyendo dependencias de desarrollo) y construimos el proyecto.
 FROM node:22-alpine AS builder
 
+# --- INICIO DEL CAMBIO ---
+# Instalar las herramientas de compilación necesarias para node-gyp
+RUN apk add --no-cache python3 make g++
+# --- FIN DEL CAMBIO ---
+
 WORKDIR /app
 
 # Instalar pnpm
