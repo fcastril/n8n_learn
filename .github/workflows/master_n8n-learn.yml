@@ -32,8 +32,8 @@ jobs:
       - name: pnpm install, build, and test
         run: |
           pnpm install
-          pnpm run build --if-present
-          pnpm run test --if-present
+          pnpm run build
+          pnpm run test
       
       # --- FIN DE CAMBIOS ---
 
@@ -70,4 +70,5 @@ jobs:
           app-name: 'n8n-learn'
           slot-name: 'Production'
           package: .
+
 
