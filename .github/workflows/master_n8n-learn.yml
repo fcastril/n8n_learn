@@ -20,20 +20,20 @@ jobs:
 
       # --- INICIO DE CAMBIOS ---
 
-      - name: Set up PNPM
-        uses: pnpm/action-setup@v4
+      - name: Set up NPM
+        uses: npm/action-setup@v4
 
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-          cache: 'pnpm' # Habilitar caché para pnpm
+          cache: 'npm' # Habilitar caché para pnpm
 
-      - name: pnpm install, build, and test
+      - name: npm install, build, and test
         run: |
-          pnpm install
-          pnpm run build
-          pnpm run test
+          npm install
+          npm run build
+          npm run test
       
       # --- FIN DE CAMBIOS ---
 
@@ -70,5 +70,6 @@ jobs:
           app-name: 'n8n-learn'
           slot-name: 'Production'
           package: .
+
 
 
