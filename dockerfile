@@ -10,8 +10,14 @@ RUN npm install -g pnpm@10
 # Copiar todo el código fuente del proyecto
 COPY . .
 
-# Instalar todas las dependencias. Le añadimos --reporter verbose para obtener más detalles si falla.
-RUN pnpm install --reporter verbose
+# --- INICIO DEL CAMBIO ---
+# Aumentar el límite de memoria para Node.js antes de ejecutar la instalación.
+# Esto es crucial para monorepos grandes en entornos con memoria limitada.
+ENV NODE_OPTIONS=--max-old-space-size=8192
+# --- FIN DEL CAMBIO ---
+
+# Instalar todas las dependencias
+RUN pnpm install
 
 # Construir el proyecto
 RUN pnpm run build
@@ -33,7 +39,6 @@ COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.ya
 COPY --from=builder /app/packages/cli ./packages/cli
 
 # Instalar únicamente las dependencias de PRODUCCIÓN.
-# No necesitará compilar nada, ya que los artefactos se copiaron.
 RUN pnpm install --prod --filter=@n8n/cli
 
 # Exponer el puerto por defecto de n8n
