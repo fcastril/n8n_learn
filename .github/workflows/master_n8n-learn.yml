@@ -22,10 +22,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
+          cache: 'npm'
 
       - name: npm install, build, and test
         run: |
-          npm install
+          npm install --workspaces
           npm run build --if-present
           npm run test --if-present
 
@@ -62,4 +63,5 @@ jobs:
           app-name: 'n8n-learn'
           slot-name: 'Production'
           package: .
+
           
