@@ -2,24 +2,21 @@
 # Aquí instalamos todo (incluyendo dependencias de desarrollo) y construimos el proyecto.
 FROM node:22-alpine AS builder
 
-# --- INICIO DEL CAMBIO ---
 # Instalar las herramientas de compilación necesarias para node-gyp
 RUN apk add --no-cache python3 make g++
-# --- FIN DEL CAMBIO ---
 
 WORKDIR /app
 
 # Instalar pnpm
 RUN npm install -g pnpm@10
 
-# Copiar solo los archivos de manifiesto para aprovechar el caché de Docker
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Instalar TODAS las dependencias
-RUN pnpm install
-
-# Copiar todo el código fuente
+# --- INICIO DEL CAMBIO ---
+# Copiar todo el código fuente del proyecto PRIMERO
 COPY . .
+
+# Ahora que todos los archivos están presentes, instalar las dependencias
+RUN pnpm install
+# --- FIN DEL CAMBIO ---
 
 # Construir el proyecto
 RUN pnpm run build
