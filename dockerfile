@@ -1,19 +1,51 @@
-# --- Etapa 1: Builder ---
-FROM node:22-bookworm AS builder
-RUN apt-get update && apt-get install -y build-essential libsqlite3-dev --no-install-recommends
-WORKDIR /app
-RUN npm install -g pnpm@10
-COPY . .
-ENV NODE_OPTIONS=--max-old-space-size=8192
-RUN pnpm install --ignore-scripts
-RUN pnpm exec turbo run build --filter="!@n8n/n8n-nodes-langchain"
+# Usa una imagen específica de Debian Bookworm como base
+FROM node:22-bookworm AS base
 
-# --- Etapa 2: Production ---
-FROM node:22-alpine
-WORKDIR /app
+# Instala pnpm globalmente
 RUN npm install -g pnpm@10
-COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/packages/cli ./packages/cli
-RUN pnpm install --prod --filter=@n8n/cli --ignore-scripts
-EXPOSE 5678
-CMD ["node", "packages/cli/bin/n8n"]
+
+# Crea el directorio de la aplicación
+WORKDIR /app
+
+# --- Etapa de Dependencias ---
+FROM base AS dependencies
+
+# Copia los manifiestos del proyecto
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copia la carpeta de parches para que pnpm pueda aplicarlos
+COPY patches ./patches
+
+# Instala TODAS las dependencias.
+RUN pnpm install --frozen-lockfile
+
+# --- Etapa de Compilación (Builder) ---
+FROM base AS builder
+
+# Copia las dependencias ya instaladas de la etapa anterior
+COPY --from=dependencies /app/node_modules ./node_modules
+
+# Copia todo el código fuente del proyecto
+COPY . .
+
+# Aumenta el límite de memoria de Node.js
+ENV NODE_OPTIONS=--max-old-space-size=8192
+
+# Ejecuta el script de compilación oficial del proyecto
+RUN pnpm run build
+
+# --- Etapa Final de Producción ---
+FROM base AS final
+
+# Establece el entorno a producción
+ENV NODE_ENV=production
+
+# Copia los manifiestos del proyecto
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copia la carpeta de parches también para la instalación de producción
+COPY patches ./patches
+
+# --- INICIO DEL CAMBIO ---
+# Instala únicamente las dependencias de PRODUCCIÓN, ignorando scripts.
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
