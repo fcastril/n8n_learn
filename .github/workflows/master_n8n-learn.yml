@@ -8,7 +8,7 @@ on:
 
 env:
   # Define aquí los nombres de tus recursos de Azure
-  APP_SERVICE_NAME: 'n8n-learn-app' # El nombre de tu App Service
+  APP_SERVICE_NAME: 'n8n-learn' # El nombre de tu App Service
   ACR_LOGIN_SERVER: 'n8nlearnregistry.azurecr.io' # El login server de tu ACR
 
 jobs:
