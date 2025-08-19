@@ -42,6 +42,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          # --- Asegúrate de que esta línea esté presente ---
+          platforms: linux/amd64
           tags: ${{ env.ACR_LOGIN_SERVER }}/n8n-learn:${{ github.sha }}
 
       - name: Deploy to Azure App Service
